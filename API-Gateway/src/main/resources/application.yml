@@ -1,0 +1,38 @@
+server:
+  port: 9000
+  
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+      - id: University-service
+        uri: lb://UNIVERSITY-SERVICE
+        predicates:
+        - Path=/uni/**
+        filters:
+        - name: CircuitBreaker
+          args:
+            name: University-service
+            fallbackuri: forward:/universityServiceFallBack
+      - id: Department-service
+        uri: lb://DEPT-SERVICE
+        predicates:
+        - Path=/dept/**
+        filters:
+        - name: CircuitBreaker
+          args:
+            name: Department-service
+            fallbackuri: forward:/departmentServiceFallBack
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url: 
+      default-zone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+      
+  
